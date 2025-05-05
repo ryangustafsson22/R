@@ -1,0 +1,57 @@
+---
+title: "Exercise 28.3 #1"
+format: html
+editor: visual
+---
+
+## Text Formatting
+
+*italic* **bold** [underline]{.underline} ~~strikeout~~ [SMALL CAPS code ^superscript^]{.smallcaps} and ~subscript~
+
+## Headings
+
+# 1st Level Header
+
+## 2nd Level Header
+
+### 3rd Level Header
+
+## Lists
+
+-   Bulleted list item 1
+
+-   Item 2
+
+-   Item 2a
+
+-   Item 2b
+
+1.  Numbered List Item 1
+
+2.  Item 2. The numbers are incremented automatically in the output.
+
+## Links and Images
+
+<http://example.com>
+
+[linked phrase](http://example.com)
+
+![optional caption text](images/quarto.PNG){fig-alt="Quarto logo and the word quarto spelled in small case letters"}
+
+| Tables       | Col2          |
+|--------------|---------------|
+| First Header | Second Header |
+| Content Cell | Content Cell  |
+| Content Cell | Content Cell  |
+
+```{r}
+
+```
+
+[^1] Footnote 1
+
+[^1]: Footnote
+
+    > Blockquote
+
+------------------------------------------------------------------------

@@ -1,0 +1,50 @@
+---
+title: "Ryan Gustafsson"
+format: html
+editor: visual
+---
+
+## Education
+
+-   Cary Grove High School Class of **2022**
+-   Augustana College Class of **2026**
+-   Major: Accounting, Business Analytics
+
+[^1] Footnote
+
+[^1]: Footnote
+
+    > Blockquote
+
+### Question 4
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+
+smaller <- diamonds |> 
+  filter(carat <= 2.5)
+```
+
+We have data about `r nrow(diamonds)` diamonds. Only `r nrow(diamonds) - nrow(smaller)` are larger than 2.5 carats. The distribution of the remainder is shown below:
+
+```{r}
+#| label: plot-smaller-diamonds
+#| echo: false
+
+smaller |> 
+  ggplot(aes(x = carat)) + 
+  geom_freqpoly(binwidth = 0.01)
+```
+
+This graph shows that generally speaking diamonds above 1 carat are pretty hard to come by. It also seems like they use some sort of rounding method because the majority of the diamonds are recorded at even intervals, whether that is the nearest half a carat, quarter of a carat, etc.
+
+### Question 4
+
+# Ryan Gustafsson
+
+This is my work for question 4 for The **Chapter 28** Exercises.
+
+This is the link <https://r4ds.hadley.nz/quarto.html#exercises-2>

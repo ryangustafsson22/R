@@ -1,0 +1,58 @@
+---
+title: "Chapter 28.6.3 Exercises"
+author: "Ryan Gustafsson"
+format: html
+editor: visual
+---
+
+## \#
+
+title: "Diamond sizes"
+
+date: 2022-09-12
+
+format: html
+
+------------------------------------------------------------------------
+
+```{r}
+
+#| label: setup
+
+#| include: false
+
+library(tidyverse)
+
+smaller <- diamonds |> 
+
+  filter(carat <= 2.5)
+
+```
+
+We have data about `r nrow(diamonds)` diamonds.
+
+Only `r nrow(diamonds) - nrow(smaller)` are larger than 2.5 carats.
+
+The distribution of the remainder is shown below:
+
+```{r}
+
+#| label: fig-carat
+
+#| echo: false
+#| fig-cap: "Graph Showing Count of Smaller Diamonds"
+#| fig-width: 10
+#| fig-height: 3
+#| out-width: 100%
+#| out-width: 20%
+smaller |> 
+  ggplot(aes(x = carat)) + 
+  geom_freqpoly(binwidth = 0.01)
+
+```
+
+![Diamond Image](images/clipboard-476197834.png){fig-align="center" width="500"}
+
+As shown in Figure @fig-carat, most smaller diamonds are under 1 carat.
+
+I could tell that the width and height code adjusted the figures width and height, but I am not sure what the second two lines of code are supposed to do to the figure.

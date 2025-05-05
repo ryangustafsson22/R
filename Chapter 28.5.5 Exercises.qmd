@@ -1,0 +1,80 @@
+---
+title: "28.5.5 Exercises"
+author: "Ryan Gustafsson"
+format: html
+editor: visual
+---
+
+```{r}
+ knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Diamond Sizes by Cut, Color, and Clarity
+
+This section observes how the size of diamonds varies depending on the cut, clarity, and color of the diamond.
+
+```{r}
+ggplot(diamonds, aes(x = cut, y = carat))+ 
+  geom_boxplot() + 
+  labs(title = "Diamond Size by Cut")
+```
+
+```{r}
+ggplot(diamonds, aes(x = color, y = carat))+ 
+  geom_boxplot() + 
+  labs(title = "Diamond Size by Color")
+```
+
+```{r}
+ggplot(diamonds, aes(x = clarity, y = carat))+ 
+  geom_boxplot() + 
+  labs(title = "Diamond Size by Clarity")
+```
+
+### Question 2
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+
+smaller <- diamonds |> 
+  mutate(formatted_carat = label_comma(carat)) |>
+  filter(carat <= 2.5) 
+```
+
+We have data about `r nrow(diamonds)` diamonds. Only `r nrow(diamonds) - nrow(smaller)` are larger than 2.5 carats. The distribution of the remainder is shown below:
+
+```{r}
+#| label: plot-smaller-diamonds
+#| echo: false
+
+smaller |> 
+  ggplot(aes(x = carat)) + 
+  geom_freqpoly(binwidth = 0.01)
+```
+
+#### The 20 Largest Diamonds in the Dataset
+
+```{r}
+#| echo: false
+
+diamonds |>
+  arrange(desc(carat)) |>
+  slice(1:20)
+
+```
+
+### Question 3
+
+```{r}
+total_diamonds <- nrow(diamonds)
+big_diamonds <- diamonds |>
+  filter(carat > 2.5) |>
+  nrow()
+
+label_percent(accuracy = .01)(big_diamonds / total_diamonds)
+  
+```
+
