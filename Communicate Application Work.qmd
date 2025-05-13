@@ -1,0 +1,206 @@
+---
+title: "Communicate Application Work"
+author: "Ryan Gustafsson"
+format: html
+editor: visual
+---
+
+# Whole Game Project
+
+## [Questions and How I Will Answer Them]{.underline}
+
+### Are Shorter Delivery Times Actually More Expensive?
+
+My plan for this question is to take the number of days for the delivery and plot
+it against the price for that shipment. I will use a regression line to more
+accurately display the relationship between these two variables. After that I
+will report what I observed in the graph that I created.
+
+### How Many Shipments Are Completed by Each Carrier?
+
+My plan for this question is to use the count function and count how many
+occurrences there are of each carrier, and this will tell me how many shipments
+each have completed. I will report the results I find by listing each carrier
+and following each by listing the amount of shipments they did.
+
+### What is the Average Cost Per Shipment of Each Carrier?
+
+For this question I will need the number of shipments for each carrier that I found
+in the last question, along with calculating the sum of the costs for each
+shipment. Once I have those values I will use summary and calculate the average
+cost per shipment by dividing the total cost by the number of shipments
+completed by that carrier.
+
+### What is the Cost Per KG-KM for Each Carrier?
+
+In a similar fashion as the last question, I will calculate the sum of the KG-KM
+for each package per carrier and then calculate the sum of the costs for each
+shipment. I will then use summary to calculate the cost per KG-KM by dividing
+total cost by the total KG-KM.
+
+### What is the Rank for Each Carrier by Cost Per KG-KM?
+
+Once I calculate the cost per KG-KM for each carrier, I will arrange that data in
+descending order and display the highest cost per KG-KM at the top and the
+lowest cost per KG-KM at the bottom.
+
+### How Does Longest Diagonal Affect Cost?
+
+For this question we are only observing packages in general that aren’t specific to
+a carrier. Thus I will use ggplot to chart cost against longest diagonal and
+see what patterns the scatterplot shows. I will present this chart along with
+my analysis of how the two variables are related to each other.
+
+## [Tidying the Data]{.underline}
+
+The only variable type I had to change was carrier, which I mutated and changed to
+a factor. I then eliminated the NA column entirely by selecting every column
+that wasn’t NA and I relocated the carrier column to the front of the table. I
+did this because I used the carrier column in almost every question and it made
+it easier having it at the far left of the table. I then renamed carrier
+because it was spelled wrong and I renamed longest diagonal to longest_diagonal
+in order to use proper snake case. This was the version of the data table that
+I used to answer the following questions.
+
+```{r}
+#| echo: false
+
+packages <- read_csv("Whole Game Raw Data.csv")
+```
+
+```{r}
+#| echo: false
+
+packages <- packages |>
+  mutate(carier = factor(carier))
+  
+packages <- packages |>
+  select(where(~ any(!is.na(.))))
+
+packages <- packages |>
+  relocate(carier)
+  
+packages <- packages |>
+  rename(carrier = carier)
+
+packages <- packages |>
+  rename(longest_diagonal = `longest diagonal`)
+
+packages
+```
+
+## [Results]{.underline}
+
+### Question 1: Are Shorter Delivery Times Actually More Expensive?
+
+I plotted the days column against the cost column using a scatterplot for all of the data and found that shorter delivery times are not more expensive than longer delivery times. The line in the graph shows an upward trend of cost as delivery time gets longer, with a steeper increase in the first 5 days and a more slight increase as the number of days gets higher. The data points look stacked because there are a limited number of days that it would take to deliver a package in this dataset. However, the graph is still useful as it shows where the bulk of the data lies as well as the relationship between delivery times and cost.
+
+```{r}
+#| echo: false
+
+ggplot(packages, aes(x = days, y = `($)`,)) +
+  geom_point() +
+  geom_smooth(color = 'black')
+
+```
+
+### Question 2: How Many Shipments Are Completed by Each Carrier?
+
+I counted up the number of occurrences of data for each carrier to determine how
+many shipments were completed by each carrier. I arranged the data in
+descending order and produced a bar graph. I found that Rapido completed the
+most shipments with 111, while Vai completed the least amount of shipments with
+84, which is a pretty big difference.
+
+```{r}
+#| echo: false
+
+carriers_filtered <- packages |>
+  filter(!is.na(carrier))
+
+carriers_filtered |>
+  count(carrier, sort = TRUE)
+
+ggplot(carriers_filtered, aes(x = carrier, fill = carrier)) +
+  geom_bar(na.rm = TRUE) +
+  labs(title = "Shipments per Carrier"
+  )
+```
+
+### Question 3: What is the Average Cost Per Shipment of Each Carrier?
+
+For this question, I used the total number of packages and the total cost for each
+carrier to find the average cost per shipment. I found that Hurtig had the
+highest average cost per package with \$96.40, while Rapido had the lowest cost
+per package with \$70.20. This is very interesting because Rapido had the most
+amount of shipments completed, but they managed to keep their cost more than
+\$25 cheaper than the most expensive carrier.
+
+```{r}
+#| echo: false
+
+avg_cost_per_carrier <- carriers_filtered |>
+  group_by(carrier) |>
+  summarize(
+    n = n(), 
+    avg_cost = mean(`($)`, na.rm = TRUE)) |>
+  arrange(desc(avg_cost))
+
+ggplot(avg_cost_per_carrier, aes(x = carrier, y = avg_cost, fill = carrier)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Average Shipping Cost per Carrier"
+  )
+```
+
+### Question 4: What is the Cost Per KG-KM for Each Carrier?
+
+For question 4 I calculated the total cost and total KG-KM for each carrier, and then divided the total cost by total KG-KM. I found that Hurtig had the highest cost per KG-KM with \$.0125, while Speedy had the lowest cost per KG-KM with \$.0105. Hurtig had the highest amount of KG-KM by far, but they also had the highest average cost which is why their cost per KG-KM is the highest. Vai has a fairly low average cost compared to the others, but it has by far the lowest total KG-KM which is why the cost_per_KGKM is relatively high.
+
+```{r}
+#| echo: false
+
+KGKM_data <- packages |>
+  filter(!is.na(carrier)) |>
+  group_by(carrier) |>
+  summarize(cost = sum(`($)`, na.rm = TRUE),
+            total_KGKM = sum(`KG-KM`, na.rm = TRUE), 
+            cost_per_KGKM = cost / total_KGKM) |>
+  arrange(desc(cost_per_KGKM))
+
+ggplot(KGKM_data, aes(x = carrier, y = `cost_per_KGKM`, fill = carrier) ) +
+  geom_bar(stat = "identity")
+```
+
+### Question 5: What is the Rank for Each Carrier by Cost Per KG-KM?
+
+This question is very much related to the last question except in this table I assigned each carrier a rank based off their cost per KG-KM, with 1 being the highest cost and 5 being the lowest. It makes it easier to visualize the order of the carriers by this criteria since the range in average costs is very low.
+
+```{r}
+#| echo: false
+
+ranked_KGKM_data <- KGKM_data |>
+  arrange(desc(cost_per_KGKM)) |>
+  mutate(rank = dense_rank(-cost_per_KGKM)) |>
+  relocate(rank)
+
+ranked_KGKM_data
+```
+
+### Question 6: How Does Longest Diagonal Affect Cost?
+
+For the final question I charted cost against the longest diagonal for each package
+using a scatterplot. The results of this were actually very surprising to me. I
+found that there was little to no relationship between the longest diagonal of
+a package and cost of a package. The data points are very dispersed throughout
+the chart and the line is relatively horizontal and has both a positive and
+negative slope at certain points.
+
+```{r}
+#| echo: false
+
+ggplot(packages, aes(x = longest_diagonal, y = `($)`)) +
+  geom_point() + 
+  geom_smooth()
+
+```
